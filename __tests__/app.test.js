@@ -30,12 +30,14 @@ describe("GET /api/topics", () => {
         });
       });
   });
-  test("status:404, responds with appropriate error status when provided a route that does not exist", () => {
-    return request(app)
-     .get("/api/topicsss")
-     .expect(404)
-     })
 });
+describe("GET /api/topicsss", () => {
+    test("status:404, responds with appropriate error status when provided a route that does not exist", () => {
+  return request(app)
+   .get("/api/topicsss")
+   .expect(404)
+   })
+})
 describe("GET /api", () => {
     test("status:200, responds with an object describing all the available endpoints on the API", () => {
       return request(app)
