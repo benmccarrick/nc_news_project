@@ -11,7 +11,7 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": ["author", "topic", "sort_by", "order_by"],
     "exampleResponse": {
       "articles": [
         {
@@ -38,6 +38,22 @@
           "created_at": "2018-05-30T15:59:13.341Z",
           "votes": 0,
           "comment_count": 6
+        }
+      ]
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "returns a all comments from a single article associated to the id given",
+    "queries": ["author", "sort_by", "order_by", "article_id"],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 5,
+          "body": "Text from comment..",
+          "article_id": 1,
+          "author": "author",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 0
         }
       ]
     }
