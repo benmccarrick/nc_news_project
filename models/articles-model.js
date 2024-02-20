@@ -10,3 +10,25 @@ exports.getArticleId = (articleId) => {
         return rows[0];
     })
 }
+
+exports.allArticles = (sort_by="created_at", order_by="DESC") => {
+
+    const validSortBy = ["created_at", "title", "topic", "author", "votes", "comment_count"]
+    const validOrderBy = ["DESC", "ASC"]
+
+    if(!validSortBy.includes(sort_by) || !validOrderBy.includes(order_by)){
+        return Promise.reject({status: 400, msg: "Bad request"})
+    }
+    
+    return db.query(`SELECT articles.*, COUNT(comment_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments ON comments.article_id = articles.article_id
+    GROUP BY articles.article_id
+    ORDER BY ${sort_by} ${order_by};`)
+    .then(({rows}) => {
+        rows.forEach((row) => {
+            delete row.body
+        })
+        return rows;
+    })
+}
