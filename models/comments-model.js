@@ -17,3 +17,19 @@ exports.getComments = (articleId, sort_by="created_at", order_by="ASC") => {
         return rows;
     })
 }
+
+exports.addComments = (body, author, articleId) =>  {
+    return db
+      .query(
+        `
+      INSERT INTO comments (body, author, article_id) 
+      VALUES ($1, $2, $3)
+      RETURNING *;
+      `,
+        [body, author, articleId]
+      )
+      .then(({ rows }) => {
+        
+        return rows[0];
+      });
+  }

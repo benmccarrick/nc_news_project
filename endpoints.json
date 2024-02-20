@@ -57,5 +57,22 @@
         }
       ]
     }
-  }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Adds a comment to a single article associated to the id given",
+    "queries": [],
+    "body": { "username": "rogersop", "body": "body of text" },
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 1,
+          "body": "Text from comment..",
+          "article_id": 1,
+          "author": "author",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 0
+        }
+      ]
+    }
+  } 
 }

@@ -135,7 +135,7 @@ describe("GET /api/articles", () => {
             expect(articles).toHaveLength(13);
             articles.forEach((article) => {
             expect(article.hasOwnProperty("body")).toBe(false)
-            })
+            });
           });
     });
     test("status:400, sends an appropriate status and error message when passed an invalid sort_by", () => {
@@ -168,7 +168,7 @@ describe("GET /api/articles/:article_id/comments", () => {
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),  
             author: expect.any(String),
-            article_id: expect.any(Number),
+            article_id: 1,
             body: expect.any(String),
             created_at: expect.any(String),
             votes: expect.any(Number)
@@ -215,6 +215,79 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
+      });
+  });
+})
+describe("POST /api/articles/:article_id/comments", () => {
+  test("status:201, responds with a new comment added to the given article_id", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: 'rogersop',
+        body: 'body of text'
+      })
+      .set("Accept", "application/json")
+      .expect(201)
+      .then(({body: {comments}}) => {
+        expect(comments).toMatchObject({
+              comment_id: expect.any(Number),
+              body: 'body of text',
+              author: 'rogersop',
+              article_id: 1,
+              created_at: expect.any(String),
+              votes: expect.any(Number)
+        });
+      });
+  });
+  test("status:404, sends an appropriate status and error message when posting to a valid but non-existent article_id", () => {
+    return request(app)
+      .post("/api/articles/9999/comments")
+      .send({
+        username: 'rogersop',
+        body: 'body of text'
+      })
+      .set("Accept", "application/json")
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe('article does not exist');
+      });
+  });
+  test("status:400, sends an appropriate status and error message when posting to an invalid article_id", () => {
+    return request(app)
+    .post("/api/articles/not_an_article_id/comments")
+    .send({
+      username: 'rogersop',
+      body: 'body of text'
+    })
+    .set("Accept", "application/json")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+  test("status:400, sends an appropriate status and error message when posting without all properties of comment request body", () => {
+    return request(app)
+    .post("/api/articles/1/comments")
+    .send({
+      username: 'rogersop',
+    })
+    .set("Accept", "application/json")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+  test("status:404, sends an appropriate status and error message when posting with an invalid username", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: 'invalid_username',
+        body: 'body of text'
+      })
+      .set("Accept", "application/json")
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe('Not found');
       });
   });
 })
