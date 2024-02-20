@@ -33,7 +33,7 @@ describe("GET /api/topics", () => {
   });
 })
 describe("GET /api/topicsss", () => {
-    test("status:404, responds with appropriate error status when provided a route that does not exist", () => {
+    test("status:404, sends an appropriate status and error message when provided a route that does not exist", () => {
     return request(app)
       .get("/api/topicsss")
       .expect(404)
@@ -74,7 +74,7 @@ describe("GET /api/articles/:article_id", () => {
             expect(article).hasOwnProperty('article_img_url')
         });
    });
-   test("status:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
+   test("status:404, sends an appropriate status and error message when given a valid but non-existent id", () => {
     return request(app)
       .get("/api/articles/222222")
       .expect(404)
@@ -82,7 +82,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe('article does not exist');
       });
   });
-  test("status:400 sends an appropriate status and error message when given an invalid id", () => {
+  test("status:400, sends an appropriate status and error message when given an invalid id", () => {
     return request(app)
       .get("/api/articles/not-an-article-id")
       .expect(400)
@@ -114,7 +114,7 @@ describe("GET /api/articles", () => {
           });
         });
     });
-    test("status:200 articles should be sorted by date in descending order by default", () => {
+    test("status:200, articles should be sorted by date in descending order by default", () => {
         return request(app)
         .get("/api/articles")
           .expect(200)
@@ -125,7 +125,7 @@ describe("GET /api/articles", () => {
             });
           });
     });
-    test("status:200 all articles should return without a body property present", () => {
+    test("status:200, all articles should return without a body property present", () => {
         return request(app)
         .get("/api/articles")
           .expect(200)
@@ -138,7 +138,7 @@ describe("GET /api/articles", () => {
             })
           });
     });
-    test("status:400, responds with an error message when passed an invalid sort_by", () => {
+    test("status:400, sends an appropriate status and error message when passed an invalid sort_by", () => {
       return request(app)
         .get("/api/articles?sort_by=not_a_sort_by")
         .expect(400)
@@ -146,7 +146,7 @@ describe("GET /api/articles", () => {
           expect(body.msg).toBe("Bad request");
         });
     });
-    test("status:400, responds with an error message when passed an invalid order_by", () => {
+    test("status:400, sends an appropriate status and error message when passed an invalid order_by", () => {
       return request(app)
         .get("/api/articles?order_by=random_order")
         .expect(400)
@@ -154,4 +154,67 @@ describe("GET /api/articles", () => {
           expect(body.msg).toBe("Bad request");
         });
     });
+})
+describe("GET /api/articles/:article_id/comments", () => {
+  test("status:200, responds with an array of comments for the given article_id", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(11);
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),  
+            author: expect.any(String),
+            article_id: expect.any(Number),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number)
+          });
+        });
+      });
+  });
+  test("status:200, comments should be sorted by date with the most recent comment first by default", () => {
+    return request(app)
+    .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({body}) => {
+        const {comments} = body
+        expect(comments).toBeSortedBy("created_at");
+      });
+  });
+  test("status:404, sends an appropriate status and error message when given a valid but non-existent article_id", () => {
+    return request(app)
+      .get("/api/articles/9999/comments")
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe('article does not exist');
+      });
+  });
+  test("status:400, sends an appropriate status and error message when given an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/not-an-article-id/comments")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+  test("status:400, sends an appropriate status and error message when passed an invalid sort_by", () => {
+    return request(app)
+      .get("/api/articles/1/comments?sort_by=not_a_sort_by")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("status:400, sends an appropriate status and error message when passed an invalid order_by", () => {
+    return request(app)
+      .get("/api/articles/1/comments?order_by=random_order")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 })
