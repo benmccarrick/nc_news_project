@@ -393,3 +393,27 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 })
+describe("DELETE /api/comments/:comment_id", () => {
+  test("status:204, deletes the comment associated with the given id", () => {
+    return request(app)
+      .delete("/api/comments/2")
+      .expect(204)
+  });
+  test("status:404, sends an appropriate status and error message when deleting a valid but non-existent comment_id", () => {
+    return request(app)
+      .delete("/api/comments/22222")
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe('Resource not found');
+      });
+  });
+  test("status:400, sends an appropriate status and error message when deleting an invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/not_a_comment")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+})    
+  
