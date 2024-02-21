@@ -4,6 +4,8 @@ const {
   formatComments,
 } = require("../db/seeds/utils");
 
+const {checkExists} = require('../controllers/utils-functions')
+
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
     const timestamp = 1557572706232;
@@ -100,5 +102,28 @@ describe("formatComments", () => {
     const comments = [{ created_at: timestamp }];
     const formattedComments = formatComments(comments, {});
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
+  });
+});
+
+describe("checkExists", () => {
+  test("Should reject if passed invalid value", () => {
+    const table = "comments";
+    const column = "comment_id";
+    const value = 0;
+    
+    expect.assertions(1);
+    return expect(checkExists(table, column, value)).rejects.toEqual({
+      status: 404, msg: "Resource not found"
+    });
+  });
+  test("Should return that the resource is found when all arguments passed are valid", () => {
+    const table = "comments";
+    const column = "comment_id";
+    const value = 4;
+    
+    return checkExists(table, column, value)
+    .then((answer) => {
+      expect(answer).toEqual("Resource found")
+    });
   });
 });
