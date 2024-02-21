@@ -228,7 +228,8 @@ describe("POST /api/articles/:article_id/comments", () => {
       })
       .set("Accept", "application/json")
       .expect(201)
-      .then(({body: {comments}}) => {
+      .then(({body}) => {
+        const {comments} = body
         expect(comments).toMatchObject({
               comment_id: expect.any(Number),
               body: 'body of text',
@@ -288,6 +289,97 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({body}) => {
         expect(body.msg).toBe('Not found');
+      });
+  });
+})
+describe("PATCH /api/articles/:article_id", () => {
+  test("status:200, responds with an updated article when votes are incremented", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({
+        inc_votes: 1000
+      })
+      .set("Accept", "application/json")
+      .expect(200)
+      .then(({body}) => {
+        const {article} = body
+        expect(article.votes).toBe(1100);
+        expect(article.article_id).toBe(1);
+        expect(article).hasOwnProperty('title');
+        expect(article).hasOwnProperty('topic');
+        expect(article).hasOwnProperty('author');
+        expect(article).hasOwnProperty('body');
+        expect(article).hasOwnProperty('created_at');
+        expect(article).hasOwnProperty('votes');
+        expect(article).hasOwnProperty('article_img_url');
+      });
+  });
+  test("status:200, responds with an updated article when votes are decremented", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({
+        inc_votes: -100
+      })
+      .set("Accept", "application/json")
+      .expect(200)
+      .then(({body}) => {
+        const {article} = body
+        expect(article.votes).toBe(0);
+        expect(article.article_id).toBe(1);
+        expect(article).hasOwnProperty('title');
+        expect(article).hasOwnProperty('topic');
+        expect(article).hasOwnProperty('author');
+        expect(article).hasOwnProperty('body');
+        expect(article).hasOwnProperty('created_at');
+        expect(article).hasOwnProperty('votes');
+        expect(article).hasOwnProperty('article_img_url');
+      });
+  });
+  test("status:404, sends an appropriate status and error message when patching a valid but non-existent article_id", () => {
+    return request(app)
+      .patch("/api/articles/22222")
+      .send({
+        inc_votes: -100
+      })
+      .set("Accept", "application/json")
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe('article does not exist');
+      });
+  });
+  test("status:400, sends an appropriate status and error message when patching an invalid article_id", () => {
+    return request(app)
+    .patch("/api/articles/not_an_article_id")
+    .send({
+      inc_votes: -100
+    })
+    .set("Accept", "application/json")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+  test("status:400, sends an appropriate status and error message when patching without all properties of new vote request body", () => {
+    return request(app)
+    .patch("/api/articles/1")
+    .send({  
+    })
+    .set("Accept", "application/json")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+  test("status:400, sends an appropriate status and error message when patching with incorrect data type", () => {
+    return request(app)
+    .patch("/api/articles/1")
+    .send({
+      inc_votes: "not a number"
+    })
+    .set("Accept", "application/json")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
       });
   });
 })
