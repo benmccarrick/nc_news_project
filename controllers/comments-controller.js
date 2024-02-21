@@ -1,5 +1,6 @@
 const {getComments, addComments} = require('../models/comments-model');
 const { getArticleId } = require('../models/articles-model');
+const {checkExists} = require('./utils-functions')
 
 exports.getCommentsByArticleId = (req, res, next) => {
     const articleId = req.params.article_id
@@ -15,13 +16,11 @@ exports.getCommentsByArticleId = (req, res, next) => {
 exports.addCommentsByArticleId = (req, res, next) => {
     const articleId = req.params.article_id;
     const {body, username} = req.body;
-    return getArticleId(articleId)
-    .then(() => {
-        return addComments(body, username, articleId)
-    })
-    .then((comments) => {
-
-       res.status(201).send({comments});
+    
+    return Promise.all([checkExists("articles", "article_id", articleId), addComments(body, username, articleId)
+    ])
+    .then((promiseResolutions) => {
+       res.status(201).send({comments: promiseResolutions[1]});
     }).catch((err) => {
         next(err);
     });

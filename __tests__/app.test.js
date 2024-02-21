@@ -236,7 +236,7 @@ describe("POST /api/articles/:article_id/comments", () => {
               author: 'rogersop',
               article_id: 1,
               created_at: expect.any(String),
-              votes: expect.any(Number)
+              votes: 0
         });
       });
   });
@@ -250,7 +250,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .set("Accept", "application/json")
       .expect(404)
       .then(({body}) => {
-        expect(body.msg).toBe('article does not exist');
+        expect(body.msg).toBe('Resource not found');
       });
   });
   test("status:400, sends an appropriate status and error message when posting to an invalid article_id", () => {
@@ -289,6 +289,16 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({body}) => {
         expect(body.msg).toBe('Not found');
+      });
+  });
+  test("status:400, sends an appropriate status and error message when posting an empty comment request body", () => {
+    return request(app)
+    .post("/api/articles/1/comments")
+    .send({})
+    .set("Accept", "application/json")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
       });
   });
 })
