@@ -369,15 +369,26 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.msg).toBe('Bad request');
       });
   });
-  test("status:400, sends an appropriate status and error message when patching without all properties of new vote request body", () => {
+  test("status:200, sends back original unaltered article when no patch body is sent", () => {
+    const articleCopy = {
+      article_id: 1,
+      title: 'Living in the shadow of a great man',
+      topic: 'mitch',
+      author: 'butter_bridge',
+      body: 'I find this existence challenging',
+      created_at: '2020-07-09T20:11:00.000Z',
+      votes: 100,
+      article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+    }
     return request(app)
     .patch("/api/articles/1")
     .send({  
     })
     .set("Accept", "application/json")
-      .expect(400)
+      .expect(200)
       .then(({body}) => {
-        expect(body.msg).toBe('Bad request');
+        const {article} = body;
+        expect(article).toEqual(articleCopy);
       });
   });
   test("status:400, sends an appropriate status and error message when patching with incorrect data type", () => {
