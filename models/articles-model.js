@@ -30,3 +30,17 @@ exports.allArticles = (sort_by="created_at", order_by="DESC") => {
         return rows;
     })
 }
+
+exports.alterArticle = (incVotes, articleId) => {
+
+    return db.query(`UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *;`, [incVotes, articleId])
+    .then(({rows}) => {
+        if(rows.length === 0) {
+            return Promise.reject({status: 404, msg: 'article does not exist'})
+          };
+        return rows[0];
+    })
+}
