@@ -446,3 +446,57 @@ describe("GET /api/users", () => {
       });
   });
 })
+describe("GET /api/articles?topic", () => {
+  test("status:200, articles should be filtered by the topic value specified in the query", () => {
+    return request(app)
+    .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({body}) => {
+        const {articles} = body
+        expect(articles).toBeInstanceOf(Array);
+        expect(articles).toHaveLength(12);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+          article_id: expect.any(Number),  
+          author: expect.any(String),
+          title: expect.any(String),
+          topic: "mitch",
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+          comment_count: expect.any(String)
+          });
+        });
+      });
+  });
+  test("status:200, if topic query is omitted, should respond with all articles", () => {
+    return request(app)
+    .get("/api/articles")
+      .expect(200)
+      .then(({body}) => {
+        const {articles} = body
+        expect(articles).toBeInstanceOf(Array);
+        expect(articles).toHaveLength(13);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+          article_id: expect.any(Number),  
+          author: expect.any(String),
+          title: expect.any(String),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+          comment_count: expect.any(String)
+          });
+        });
+      });
+  });
+  test("status:404, sends an appropriate status and error message when querying a topic that does not exist", () => {
+    return request(app)
+    .get("/api/articles?topic=1111")
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe('Resource not found');
+      });
+  });
+})
