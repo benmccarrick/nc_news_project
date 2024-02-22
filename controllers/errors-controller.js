@@ -1,6 +1,6 @@
 exports.handleInvalidEndpoints = (req, res, next) => {
     res.status(404).send({msg: "Path not found"});
-
+    next(err);
 }
 
 exports.handlePsqlErrors = (err, req, res, next) => {

@@ -469,31 +469,18 @@ describe("GET /api/articles?topic", () => {
         });
       });
   });
-  test("status:200, if topic query is omitted, should respond with all articles", () => {
+  test("status:200, if topic query is valid but no articles are associated with it, respond with an empty array", () => {
     return request(app)
-    .get("/api/articles")
+    .get("/api/articles?topic=paper")
       .expect(200)
       .then(({body}) => {
         const {articles} = body
-        expect(articles).toBeInstanceOf(Array);
-        expect(articles).toHaveLength(13);
-        articles.forEach((article) => {
-          expect(article).toMatchObject({
-          article_id: expect.any(Number),  
-          author: expect.any(String),
-          title: expect.any(String),
-          topic: expect.any(String),
-          created_at: expect.any(String),
-          votes: expect.any(Number),
-          article_img_url: expect.any(String),
-          comment_count: expect.any(Number)
-          });
-        });
+        expect(articles).toEqual([])
       });
   });
   test("status:404, sends an appropriate status and error message when querying a topic that does not exist", () => {
     return request(app)
-    .get("/api/articles?topic=1111")
+    .get("/api/articles?topic=notatopic")
       .expect(404)
       .then(({body}) => {
         expect(body.msg).toBe('Resource not found');
