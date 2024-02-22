@@ -109,7 +109,7 @@ describe("GET /api/articles", () => {
               created_at: expect.any(String),
               votes: expect.any(Number),
               article_img_url: expect.any(String),
-              comment_count: expect.any(String)
+              comment_count: expect.any(Number)
             });
           });
         });
@@ -464,7 +464,7 @@ describe("GET /api/articles?topic", () => {
           created_at: expect.any(String),
           votes: expect.any(Number),
           article_img_url: expect.any(String),
-          comment_count: expect.any(String)
+          comment_count: expect.any(Number)
           });
         });
       });
@@ -486,7 +486,7 @@ describe("GET /api/articles?topic", () => {
           created_at: expect.any(String),
           votes: expect.any(Number),
           article_img_url: expect.any(String),
-          comment_count: expect.any(String)
+          comment_count: expect.any(Number)
           });
         });
       });
@@ -497,6 +497,26 @@ describe("GET /api/articles?topic", () => {
       .expect(404)
       .then(({body}) => {
         expect(body.msg).toBe('Resource not found');
+      });
+  });
+})
+describe("GET /api/articles/:article_id comment_count", () => {
+  test("status:200, responds with the total count of all the comments from the specified article id", () => {
+    return request(app)
+    .get("/api/articles/1")
+      .expect(200)
+      .then(({body}) => {
+        const {article} = body
+        expect(article).toMatchObject({
+          article_id: 1,  
+          author: expect.any(String),
+          title: expect.any(String),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+          comment_count: 11
+          });
       });
   });
 })
