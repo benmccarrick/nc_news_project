@@ -1,4 +1,5 @@
 const {getArticleId, allArticles, alterArticle} = require('../models/articles-model')
+const {checkExists} = require('./utils-functions')
 
 exports.getArticleById = (req, res, next) => {
     const articleId = req.params.article_id;
@@ -11,13 +12,26 @@ exports.getArticleById = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    const {sort_by, order_by} = req.query;
+    const {topic, sort_by, order_by} = req.query;
 
-    allArticles(sort_by, order_by).then((articles) => {
-       res.status(200).send({articles});
-    }).catch((err) => {
-        next(err);
-    });
+    if(topic){
+
+    return Promise.all([checkExists("articles", "topic", topic), allArticles(topic, sort_by, order_by)])
+        .then((promiseResolutions) => {
+            res.status(200).send({articles: promiseResolutions[1]});
+        }).catch((err) => {
+            next(err);
+        });
+    }
+    else { 
+        allArticles(topic, sort_by, order_by)
+        .then((articles) => {
+           res.status(200).send({articles});
+        }).catch((err) => {
+            next(err);
+        });
+
+    }
 }
 
 exports.updateArticles = (req, res, next) => {
