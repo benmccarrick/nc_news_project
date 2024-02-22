@@ -4,7 +4,12 @@ const {
   formatComments,
 } = require("../db/seeds/utils");
 
-const {checkExists} = require('../controllers/utils-functions')
+const {checkExists} = require('../controllers/utils-functions');
+const db = require("../db/connection.js");
+
+afterAll(() => {
+  return db.end()
+});
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -121,9 +126,7 @@ describe("checkExists", () => {
     const column = "comment_id";
     const value = 4;
     
-    return checkExists(table, column, value)
-    .then((answer) => {
-      expect(answer).toEqual("Resource found")
-    });
+    expect.assertions(1);
+    return expect(checkExists(table, column, value)).resolves.toBe("Resource found")
   });
 });
