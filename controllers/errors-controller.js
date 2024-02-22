@@ -1,6 +1,6 @@
 exports.handleInvalidEndpoints = (req, res, next) => {
     res.status(404).send({msg: "Path not found"});
-    next(err);
+
 }
 
 exports.handlePsqlErrors = (err, req, res, next) => {
@@ -23,5 +23,7 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handleInternalErrors = (err, req, res, next) => {
-    console.log('500 Internal server error');
+    if(err){
+    res.status(500).send("Internal server error");
+    }
 }
