@@ -1,4 +1,4 @@
-const {getComments, addComments, deleteComments} = require('../models/comments-model');
+const {getComments, addComments, deleteComments, updateComments} = require('../models/comments-model');
 const {checkExists} = require('./utils-functions')
 
 exports.getCommentsByArticleId = (req, res, next) => {
@@ -32,6 +32,17 @@ exports.deleteCommentById = (req, res, next) => {
     ])
     .then(() => {
        res.status(204).send();
+    }).catch((err) => {
+        next(err);
+    });
+}
+
+exports.updateCommentById = (req, res, next) => {
+    const commentId = req.params.comment_id;
+    const incVotes = req.body.inc_votes;
+    
+    updateComments(incVotes, commentId).then((comment) => {
+       res.status(200).send({comment});
     }).catch((err) => {
         next(err);
     });
