@@ -125,6 +125,15 @@ describe("GET /api/articles", () => {
             });
           });
     });
+    test("status:200, articles should be sorted by title in ascending order when given query that isn't default", () => {
+      return request(app)
+      .get("/api/articles?sort_by=title&order_by=ASC")
+        .expect(200)
+        .then(({body}) => {
+          const {articles} = body
+          expect(articles).toBeSortedBy("title");
+        });
+    });
     test("status:200, all articles should return without a body property present", () => {
         return request(app)
         .get("/api/articles")
@@ -149,6 +158,22 @@ describe("GET /api/articles", () => {
     test("status:400, sends an appropriate status and error message when passed an invalid order_by", () => {
       return request(app)
         .get("/api/articles?order_by=random_order")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request");
+        });
+    });
+    test("status:400, sends an appropriate status and error message when passed a valid sort_by but an invalid order_by", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order_by=random_order")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request");
+        });
+    });
+    test("status:400, sends an appropriate status and error message when passed a valid order_by but an invalid sort_by", () => {
+      return request(app)
+        .get("/api/articles?sort_by=not_a_sort_by&order_by=ASC")
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Bad request");
