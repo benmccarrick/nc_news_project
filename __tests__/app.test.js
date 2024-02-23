@@ -555,3 +555,101 @@ describe("GET /api/users/:username", () => {
       });
   });
 });
+describe("PATCH /api/comments/:comment_id", () => {
+  test("status:200, responds with an updated comment when votes are incremented on the specified comment_id", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send({
+        inc_votes: 1000
+      })
+      .set("Accept", "application/json")
+      .expect(200)
+      .then(({body}) => {
+        const {comment} = body
+        expect(comment).toMatchObject({
+          comment_id: 2,
+          body: expect.any(String),
+          votes: 1014,
+          author: expect.any(String),
+          article_id: expect.any(Number),
+          created_at: expect.any(String)
+        });
+      });
+  });
+  test("status:200, responds with an updated comment when votes are decremented on the specified comment_id", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({
+        inc_votes: -15
+      })
+      .set("Accept", "application/json")
+      .expect(200)
+      .then(({body}) => {
+        const {comment} = body
+        expect(comment).toMatchObject({
+          comment_id: 1,
+          body: expect.any(String),
+          votes: 1,
+          author: expect.any(String),
+          article_id: expect.any(Number),
+          created_at: expect.any(String)
+        });
+      });
+  });
+  test("status:404, sends an appropriate status and error message when patching a valid but non-existent article_id", () => {
+    return request(app)
+      .patch("/api/comments/22222")
+      .send({
+        inc_votes: -100
+      })
+      .set("Accept", "application/json")
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe('comment does not exist');
+      });
+  });
+  test("status:400, sends an appropriate status and error message when patching an invalid article_id", () => {
+    return request(app)
+    .patch("/api/comments/not_an_comment_id")
+    .send({
+      inc_votes: -100
+    })
+    .set("Accept", "application/json")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+  test("status:200, sends back original unaltered comment when no patch body is sent", () => {
+    const commentCopy = {
+      comment_id: 1,
+      body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      votes: 16,
+      author: "butter_bridge",
+      article_id: 9,
+      created_at: "2020-04-06T12:17:00.000Z"
+    }
+    return request(app)
+    .patch("/api/comments/1")
+    .send({ 
+    })
+    .set("Accept", "application/json")
+      .expect(200)
+      .then(({body}) => {
+        const {comment} = body;
+        expect(comment).toEqual(commentCopy);
+      });
+  });
+  test("status:400, sends an appropriate status and error message when patching with incorrect data type", () => {
+    return request(app)
+    .patch("/api/comments/1")
+    .send({
+      inc_votes: "not a number"
+    })
+    .set("Accept", "application/json")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+})
