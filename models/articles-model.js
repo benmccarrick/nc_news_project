@@ -78,7 +78,6 @@ exports.newArticle = (author, title, body, topic, article_img_url = "https://def
         [author, title, body, topic, article_img_url]
       )
       .then(({ rows }) => {
-        console.log(rows[0])
         return rows[0];
       });
   }

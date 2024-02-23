@@ -64,14 +64,16 @@ describe("GET /api/articles/:article_id", () => {
         .expect(200)
         .then(({body}) => {
             const {article} = body;
-            expect(article.article_id).toBe(2)
-            expect(article).hasOwnProperty('title')
-            expect(article).hasOwnProperty('topic')
-            expect(article).hasOwnProperty('author')
-            expect(article).hasOwnProperty('body')
-            expect(article).hasOwnProperty('created_at')
-            expect(article).hasOwnProperty('votes')
-            expect(article).hasOwnProperty('article_img_url')
+            expect(article).toMatchObject({
+              article_id: 2,  
+              author: expect.any(String),
+              title: expect.any(String),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              body: expect.any(String),
+              votes: 0,
+              article_img_url: expect.any(String),
+              });
         });
    });
    test("status:404, sends an appropriate status and error message when given a valid but non-existent id", () => {
@@ -338,15 +340,16 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(200)
       .then(({body}) => {
         const {article} = body
-        expect(article.votes).toBe(1100);
-        expect(article.article_id).toBe(1);
-        expect(article).hasOwnProperty('title');
-        expect(article).hasOwnProperty('topic');
-        expect(article).hasOwnProperty('author');
-        expect(article).hasOwnProperty('body');
-        expect(article).hasOwnProperty('created_at');
-        expect(article).hasOwnProperty('votes');
-        expect(article).hasOwnProperty('article_img_url');
+        expect(article).toMatchObject({
+          article_id: 1,  
+          author: expect.any(String),
+          title: expect.any(String),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          body: expect.any(String),
+          votes: 1100,
+          article_img_url: expect.any(String),
+          });
       });
   });
   test("status:200, responds with an updated article when votes are decremented", () => {
@@ -359,15 +362,16 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(200)
       .then(({body}) => {
         const {article} = body
-        expect(article.votes).toBe(0);
-        expect(article.article_id).toBe(1);
-        expect(article).hasOwnProperty('title');
-        expect(article).hasOwnProperty('topic');
-        expect(article).hasOwnProperty('author');
-        expect(article).hasOwnProperty('body');
-        expect(article).hasOwnProperty('created_at');
-        expect(article).hasOwnProperty('votes');
-        expect(article).hasOwnProperty('article_img_url');
+        expect(article).toMatchObject({
+          article_id: 1,  
+          author: expect.any(String),
+          title: expect.any(String),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          body: expect.any(String),
+          votes: 0,
+          article_img_url: expect.any(String),
+          });
       });
   });
   test("status:404, sends an appropriate status and error message when patching a valid but non-existent article_id", () => {
