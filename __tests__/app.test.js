@@ -532,3 +532,26 @@ describe("GET /api/articles/:article_id comment_count", () => {
       });
   });
 })
+describe("GET /api/users/:username", () => {
+  test("status:200, responds with a single user associated to the username given", () => {
+    return request(app)
+      .get("/api/users/rogersop")
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user).toMatchObject({
+            username: 'rogersop',
+            name: 'paul',
+            avatar_url: 'https://avatars2.githubusercontent.com/u/24394918?s=400&v=4'
+        });
+      });
+  });
+  test("status:404, sends an appropriate status and error message when username does not exist", () => {
+    return request(app)
+    .get("/api/users/not_a_username")
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe('Resource not found');
+      });
+  });
+});
