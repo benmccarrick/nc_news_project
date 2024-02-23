@@ -1,4 +1,4 @@
-const {getArticleId, allArticles, alterArticle} = require('../models/articles-model')
+const {getArticleId, allArticles, alterArticle, newArticle} = require('../models/articles-model')
 const {checkExists} = require('./utils-functions')
 
 exports.getArticleById = (req, res, next) => {
@@ -40,3 +40,17 @@ exports.updateArticles = (req, res, next) => {
     });
 }
 
+exports.addArticles = (req, res, next) => {
+    const {author, title, body, topic, article_img_url} = req.body;
+    
+   return newArticle(author, title, body, topic, article_img_url)
+    .then(({article_id}) => {
+      return getArticleId(article_id);
+    })
+    .then((article) => {
+        res.status(201).send({article});
+    })
+    .catch((err) => {
+        next(err);
+    });
+}

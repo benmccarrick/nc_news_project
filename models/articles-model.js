@@ -66,3 +66,19 @@ exports.alterArticle = (incVotes, articleId) => {
         return rows[0];
     })
 }
+
+exports.newArticle = (author, title, body, topic, article_img_url = "https://defaulturl.com") =>  {
+    return db
+      .query(
+        `
+      INSERT INTO articles (author, title, body, topic, article_img_url) 
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *;
+      `,
+        [author, title, body, topic, article_img_url]
+      )
+      .then(({ rows }) => {
+        console.log(rows[0])
+        return rows[0];
+      });
+  }
