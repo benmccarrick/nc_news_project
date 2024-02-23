@@ -653,3 +653,95 @@ describe("PATCH /api/comments/:comment_id", () => {
       });
   });
 })
+describe("POST /api/articles/", () => {
+  test("status:201, responds with a new article that is sent via the request body", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: 'rogersop',
+        body: 'body of text',
+        title: "cats have nine lives",
+        topic: "cats",
+        article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      })
+      .set("Accept", "application/json")
+      .expect(201)
+      .then(({body}) => {
+        const {article} = body
+        expect(article).toMatchObject({
+              body: 'body of text',
+              author: 'rogersop',
+              title: "cats have nine lives",
+              topic: "cats",
+              article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              article_id: expect.any(Number),
+              created_at: expect.any(String),
+              votes: 0,
+              comment_count: expect.any(Number)
+        });
+      });
+  });
+  test("status:201, responds with a new article that is sent via the request body, with a default article_img_url if not sent", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: 'rogersop',
+        body: 'body of text',
+        title: "cats have nine lives",
+        topic: "cats"
+      })
+      .set("Accept", "application/json")
+      .expect(201)
+      .then(({body}) => {
+        const {article} = body
+        expect(article).toMatchObject({
+              body: 'body of text',
+              author: 'rogersop',
+              title: "cats have nine lives",
+              topic: "cats",
+              article_img_url: "https://defaulturl.com",
+              article_id: expect.any(Number),
+              created_at: expect.any(String),
+              votes: 0,
+              comment_count: expect.any(Number)
+        });
+      });
+  });
+  test("status:400, sends an appropriate status and error message when posting without all properties of articles request body", () => {
+    return request(app)
+    .post("/api/articles")
+    .send({
+      author: 'rogersop'
+    })
+    .set("Accept", "application/json")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+  test("status:404, sends an appropriate status and error message when posting with an invalid value for 1 or more of the request body keys", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: 'not_an_author',
+        body: 'body of text',
+        title: "cats have nine lives",
+        topic: "not_a_topic"
+      })
+      .set("Accept", "application/json")
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe('Not found');
+      });
+  });
+  test("status:400, sends an appropriate status and error message when posting an empty comment request body", () => {
+    return request(app)
+    .post("/api/articles")
+    .send({})
+    .set("Accept", "application/json")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+})

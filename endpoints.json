@@ -138,5 +138,25 @@
         }
       ]
     }
+  },
+  "POST /api/articles": {
+    "description": "inserts a new article",
+    "queries": [],
+    "body": { "author": "rogersop", "body": "body of text", "title": "title", "topic": "topic", "article_img_url": "https://defaulturl.com" },
+    "exampleResponse": {
+      "articles": [
+        {
+          "title": "title",
+          "topic": "topic",
+          "author": "rogersop",
+          "article_id": 15,
+          "article_img_url": "https://defaulturl.com",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 0,
+          "body": "body of text",
+          "comment_count": 6
+        }
+      ]
+    }
   }
 }
