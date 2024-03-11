@@ -5,9 +5,10 @@ const {handlePsqlErrors, handleCustomErrors, handleInternalErrors, handleInvalid
 
 const endpointsRouter = require('./routes/endpoints-router')
 
-app.use(cors());
 
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 
 app.use("/api", endpointsRouter)
