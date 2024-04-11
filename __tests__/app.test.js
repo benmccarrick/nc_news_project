@@ -749,3 +749,67 @@ describe("POST /api/articles/", () => {
       });
   });
 })
+describe("POST /api/topics/", () => {
+  test("status:201, responds with a new topic that is sent via the request body", () => {
+    return request(app)
+      .post("/api/topics")
+      .send({
+        slug: 'gaming',
+        description: 'Any time, place or console, count me in!'
+      })
+      .set("Accept", "application/json")
+      .expect(201)
+      .then(({body}) => {
+        const {topic} = body
+        expect(topic).toMatchObject({
+          slug: 'gaming',
+          description: 'Any time, place or console, count me in!'
+        });
+      });
+  });
+  test("status:400, sends an appropriate status and error message when posting without the topic of topic request body", () => {
+    return request(app)
+    .post("/api/topics")
+    .send({
+      description: 'no topic here'
+    })
+    .set("Accept", "application/json")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+  test("status:400, sends an appropriate status and error message when posting an empty comment request body", () => {
+    return request(app)
+    .post("/api/topics")
+    .send({})
+    .set("Accept", "application/json")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+})
+describe("DELETE /api/articles/:article_id", () => {
+  test("status:204, deletes the article associated with the given id", () => {
+    return request(app)
+      .delete("/api/articles/2")
+      .expect(204)
+  });
+  test("status:404, sends an appropriate status and error message when deleting a valid but non-existent article_id", () => {
+    return request(app)
+      .delete("/api/articles/22222")
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe('Resource not found');
+      });
+  });
+  test("status:400, sends an appropriate status and error message when deleting an invalid article_id", () => {
+    return request(app)
+      .delete("/api/articles/not_an_article")
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad request');
+      });
+  });
+})   

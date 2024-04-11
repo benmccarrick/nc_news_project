@@ -1,4 +1,4 @@
-const {getArticleId, allArticles, alterArticle, newArticle} = require('../models/articles-model')
+const {getArticleId, allArticles, alterArticle, newArticle, deleteArticle} = require('../models/articles-model')
 const {checkExists} = require('./utils-functions')
 
 exports.getArticleById = (req, res, next) => {
@@ -51,6 +51,18 @@ exports.addArticles = (req, res, next) => {
         res.status(201).send({article});
     })
     .catch((err) => {
+        next(err);
+    });
+}
+
+exports.deleteArticleById = (req, res, next) => {
+    const articleId = req.params.article_id;
+    
+    return Promise.all([checkExists("articles", "article_id", articleId), deleteArticle(articleId)
+    ])
+    .then(() => {
+       res.status(204).send();
+    }).catch((err) => {
         next(err);
     });
 }

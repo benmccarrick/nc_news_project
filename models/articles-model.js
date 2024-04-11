@@ -81,3 +81,11 @@ exports.newArticle = (author, title, body, topic, article_img_url = "https://def
         return rows[0];
       });
   }
+
+  exports.deleteArticle = (articleId) =>  {
+    return db.query(`
+      DELETE FROM articles 
+      WHERE article_id = $1
+      RETURNING *;`,[articleId]
+      );
+  }

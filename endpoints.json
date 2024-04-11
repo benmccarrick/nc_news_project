@@ -158,5 +158,23 @@
         }
       ]
     }
+  },
+  "POST /api/topics": {
+    "description": "inserts a new topic",
+    "queries": [],
+    "body": { "slug": "new topic", "description": "desciption of topic"},
+    "exampleResponse": {
+      "topics": [
+        {
+          "slug": "new topic",
+          "description": "desciption of topic"
+        }
+      ]
+    }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "Deletes an article associated to the id given",
+    "queries": [],
+    "exampleResponse": {}
   }
 }
