@@ -2,7 +2,7 @@
 
 The intention of this project is to mimic the building of a real world backend service (such as Reddit) which should provide information to the front end architecture.
 
-Here is a link to the hosted version: https://nc-news-project-djbv.onrender.com/
+Here is a link to the hosted version: https://nc-news-project-djbv.onrender.com/api
 
 ## How to run this project locally
 
